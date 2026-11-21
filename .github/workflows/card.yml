@@ -1,0 +1,22 @@
+name: card
+on:
+  schedule:
+    - cron: "17 23 * * *" # 00:17 in Žilina (CET), after the day's last contributions
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  card:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun scripts/card.ts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          git diff --quiet card.svg && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: update the contribution card" card.svg
+          git push
