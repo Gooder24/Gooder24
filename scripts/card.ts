@@ -11,6 +11,7 @@ if (!token) throw new Error("GH_TOKEN is not set");
 const C = {
   surface: "#000a07",
   container: "#0a1512",
+  high: "#1a2320",
   outline: "#585f5d",
   text: "#f0f0eb",
   variant: "#b4b4b0",
@@ -72,17 +73,23 @@ const H = 120;
 const stackW = 344;
 const factW = (W - 32 - stackW - 16) / 2;
 
-// Icons: Simple Icons (CC0), drawn on a 24-unit grid and scaled to 32 px.
+// Every logo sits in the same 36 px tile as a 24 px glyph, so the three read as one set. Rust and
+// PostgreSQL are Simple Icons paths (CC0) on a 24-unit grid; the TypeScript mark is its letters, set
+// in the card's own font, because its Simple Icons path is itself a filled square.
+const tile = (x: number, glyph: string) =>
+  `<rect x="${x + 1}" y="45" width="34" height="34" fill="${C.high}" stroke="${C.outline}" stroke-width="2"/>
+${glyph}`;
+const logo = (icon: string) => (x: number) =>
+  `<path transform="translate(${x + 6} 50)" fill="${C.text}" d="${readFileSync(asset(`icons/${icon}.path`), "utf8").trim()}"/>`;
 const stack = [
-  { name: "TypeScript", icon: "typescript" },
-  { name: "Rust", icon: "rust" },
-  { name: "PostgreSQL", icon: "postgresql" },
+  { name: "TypeScript", glyph: (x: number) => `<text x="${x + 18}" y="70" font-size="22" fill="${C.text}" text-anchor="middle">TS</text>` },
+  { name: "Rust", glyph: logo("rust") },
+  { name: "PostgreSQL", glyph: logo("postgresql") },
 ]
   .map((s, i) => {
     const x = 28 + i * 108;
-    const d = readFileSync(asset(`icons/${s.icon}.path`), "utf8").trim();
-    return `<path transform="translate(${x} 42) scale(1.3333)" fill="${C.text}" d="${d}"/>
-${text(x, 94, 11, C.variant, s.name)}`;
+    return `${tile(x, s.glyph(x))}
+${text(x, 96, 11, C.variant, s.name)}`;
   })
   .join("\n");
 
