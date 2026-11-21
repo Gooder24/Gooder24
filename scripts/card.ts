@@ -12,10 +12,10 @@ const C = {
   surface: "#000a07",
   container: "#0a1512",
   high: "#1a2320",
-  outline: "#585f5d",
   text: "#f0f0eb",
   variant: "#b4b4b0",
-  warning: "#e2c08d",
+  primary: "#628790",
+  secondary: "#a2cdc4",
 };
 
 interface Day {
@@ -66,7 +66,7 @@ const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 const text = (x: number, y: number, size: number, fill: string, s: string) =>
   `<text x="${x}" y="${y}" font-size="${size}" fill="${fill}">${esc(s)}</text>`;
 const panel = (x: number, w: number) =>
-  `<rect x="${x + 1}" y="17" width="${w - 2}" height="86" fill="${C.container}" stroke="${C.outline}" stroke-width="2"/>`;
+  `<rect x="${x + 1}" y="17" width="${w - 2}" height="86" rx="8" fill="${C.container}" stroke="${C.primary}" stroke-width="2"/>`;
 
 const W = 840;
 const H = 120;
@@ -77,7 +77,7 @@ const factW = (W - 32 - stackW - 16) / 2;
 // PostgreSQL are Simple Icons paths (CC0) on a 24-unit grid; the TypeScript mark is its letters, set
 // in the card's own font, because its Simple Icons path is itself a filled square.
 const tile = (x: number, glyph: string) =>
-  `<rect x="${x + 1}" y="45" width="34" height="34" fill="${C.high}" stroke="${C.outline}" stroke-width="2"/>
+  `<rect x="${x + 1}" y="45" width="34" height="34" rx="6" fill="${C.high}" stroke="${C.primary}" stroke-width="2"/>
 ${glyph}`;
 const logo = (icon: string) => (x: number) =>
   `<path transform="translate(${x + 6} 50)" fill="${C.text}" d="${readFileSync(asset(`icons/${icon}.path`), "utf8").trim()}"/>`;
@@ -100,8 +100,8 @@ const facts = [
   .map((f, i) => {
     const x = 16 + stackW + 8 + i * (factW + 8);
     return `${panel(x, factW)}
-${text(x + 12, 38, 11, C.variant, f.label)}
-${text(x + 12, 74, 33, i === 0 ? C.warning : C.text, f.value)}
+${text(x + 12, 38, 11, C.primary, f.label)}
+${text(x + 12, 74, 33, i === 0 ? C.secondary : C.text, f.value)}
 ${text(x + 12, 92, 11, C.variant, f.note)}`;
   })
   .join("\n");
@@ -109,9 +109,9 @@ ${text(x + 12, 92, 11, C.variant, f.note)}`;
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="t">
 <title id="t">${esc(`Stack: TypeScript, Rust, PostgreSQL. Best day: ${best.contributionCount} contributions on ${fmt(best.date)}. Longest streak: ${longest} days.`)}</title>
 <style>@font-face{font-family:"Departure Mono";src:url(data:font/woff2;base64,${font}) format("woff2")}text{font-family:"Departure Mono",monospace}</style>
-<rect x="1" y="1" width="${W - 2}" height="${H - 2}" rx="12" fill="${C.surface}" stroke="${C.outline}" stroke-width="2"/>
+<rect x="1" y="1" width="${W - 2}" height="${H - 2}" rx="12" fill="${C.surface}" stroke="${C.primary}" stroke-width="2"/>
 ${panel(16, stackW)}
-${text(28, 38, 11, C.variant, "STACK")}
+${text(28, 38, 11, C.primary, "STACK")}
 ${stack}
 ${facts}
 </svg>
